@@ -121,14 +121,14 @@
       transform: translateY(-3px);
       box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
-    .delete-entry {
+       .delete-entry {
       position: absolute;
       top: 8px;
       right: 8px;
-      background: none;
-      color: #aaa;
+      background: none; /* 完全透明背景 */
+      color: #aaa;     /* 默认浅灰色 */
       border: none;
-      font-size: 20px;
+      font-size: 20px; /* 适当放大叉号 */
       cursor: pointer;
       width: 24px;
       height: 24px;
@@ -139,20 +139,28 @@
       transition: all 0.2s ease;
       padding: 0;
       font-weight: bold;
-      border-radius: 0;
-      box-shadow: none !important;
+      border-radius: 0; /* 去除圆角 */
+      box-shadow: none !important; /* 去除所有阴影 */
     }
+
     .history-entry:hover .delete-entry {
       opacity: 1;
     }
+
     .delete-entry:hover {
-      color: #ff0000;
-      transform: scale(1.3);
-      background: none !important;
+      color: #ff0000;  /* 悬停变红 */
+      transform: scale(1.3); /* 放大效果 */
+      background: none !important; /* 确保无背景 */
     }
+
+    .delete-entry:active {
+      transform: scale(1.1); /* 点击时轻微缩小 */
+    }
+
     .delete-entry:active {
       transform: scale(1.1);
     }
+    
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
@@ -166,6 +174,8 @@
       font-style: italic;
       padding: 20px;
     }
+    
+    /* 统一图片样式 */
     .preview img,
     .entry img,
     .history-entry img {
@@ -176,21 +186,11 @@
       display: block;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     }
-    .audio-controls {
-      text-align: center;
-      margin-top: 20px;
-    }
-    .audio-controls button {
-      display: inline-block;
-      padding: 8px 16px;
-      margin: 0 5px;
-      background-color: #2196F3;
-    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Our Diary</h1>
+    <h1>My Diary</h1>
     <div class="current-time" id="currentTime"></div>
 
     <textarea id="diaryText" placeholder="Write your thoughts here..."></textarea>
@@ -212,14 +212,12 @@
       </div>
     </div>
 
-    <div class="audio-controls">
-      <button id="playBtn">Play Music</button>
-      <button id="pauseBtn">Pause Music</button>
+    <div class="audio-player">
+      <audio id="bgMusic" autoplay loop>
+        <source src="E:\personal\chiikawa.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+      </audio>
     </div>
-    <audio id="bgMusic" loop>
-      <source src="chiikawa.mp3" type="audio/mpeg">
-      Your browser does not support the audio element.
-    </audio>
   </div>
 
   <script>
@@ -236,14 +234,12 @@
       // 每秒更新时间
       setInterval(updateCurrentTimeAndBackground, 1000);
       
-      // 音乐控制
+      // 音乐自动播放处理
       const music = document.getElementById('bgMusic');
-      document.getElementById('playBtn').addEventListener('click', () => {
-        music.play().catch(e => console.log("Playback failed:", e));
-      });
-      document.getElementById('pauseBtn').addEventListener('click', () => {
-        music.pause();
-      });
+      const tryPlay = () => {
+        music.play().catch(() => {});
+      };
+      document.body.addEventListener('click', tryPlay, { once: true });
     });
 
     // 更新时间并根据格林尼治时间切换背景图
@@ -300,7 +296,7 @@
           };
           reader.onerror = function() {
             alert('Error reading image file');
-            completeSave(newEntry);
+            completeSave(newEntry); // 即使图片出错也保存文本
           };
           reader.readAsDataURL(fileInput.files[0]);
         } else {
